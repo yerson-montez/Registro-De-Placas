@@ -104,12 +104,5 @@ def actualizar_graficos(n):
 
     return fig_barras, fig_pie, fig_linea, tabla
 
-# ========== MAIN ========== #
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8050))  # Usa el puerto asignado por Render
-    app.run(host='0.0.0.0', port=port, debug=True)  # Escucha en todas las interfaces
-
-
-    
-
-
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -1,4 +1,10 @@
-import cv2, csv, pytesseract, os, re, requests
+import cv2
+import csv
+import pytesseract
+import os
+import re
+import time
+import requests
 from datetime import datetime
 from conexion_mysql import conectar  # Asegúrate de tener este módulo
 
@@ -7,7 +13,7 @@ from conexion_mysql import conectar  # Asegúrate de tener este módulo
 # =========================
 CSV_FILE = os.path.join(os.getcwd(), "registro.csv")
 HAAR_CASCADE_PATH = "haarcascades/haarcascade_russian_plate_number.xml"
-ESP32_IP = "http://10.208.255.124"  # Sin slash final
+ESP32_IP = "http://10.239.134.124"  # Sin slash final
 
 # =========================
 # CLASE PARA REGISTROS
@@ -73,7 +79,7 @@ class RegistroPlacas:
 # FUNCIONES AUXILIARES
 # =========================
 def limpiar_texto(texto):
-    return re.sub(r'[^A-Z0-9-]', '', texto.upper())
+    return re.sub(r'[^A-Z0-9]', '', texto.upper())
 
 def levantar_barrera(evento):
     ruta = "entrada" if evento == "entrada" else "salida"
@@ -90,7 +96,7 @@ def levantar_barrera(evento):
 # =========================
 def main():
     detector = cv2.CascadeClassifier(HAAR_CASCADE_PATH)
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(2)
 
     if not cam.isOpened():
         print("❌ No se puede acceder a la cámara.")
@@ -125,6 +131,8 @@ def main():
                     nuevo_evento = "salida" if r[1] == "entrada" else "entrada"
                     registro.agregar_registro(texto_limpio, nuevo_evento, r[2])
                     levantar_barrera(nuevo_evento)
+                    print("⏳ Esperando 5 segundos para evitar duplicados...")
+                    time.sleep(5)  # 🕒 Espera 10 segundos antes de seguir escaneando
                 else:
                     print(f"⛔ Placa no registrada: {texto_limpio}")
 
@@ -141,4 +149,3 @@ def main():
 # =========================
 if __name__ == "__main__":
     main()
-#.\venv\Scripts\Activate.ps1
